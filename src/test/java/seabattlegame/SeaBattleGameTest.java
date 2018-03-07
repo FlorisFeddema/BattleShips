@@ -61,26 +61,49 @@ public class SeaBattleGameTest {
     @Test
     public void placeShipTest() {
         game.registerPlayer("Poep", ui, true);
-        assertEquals(true, game.placeShip(0, ShipType.MINESWEEPER, 0, 0, true));
+        assertEquals("Ship not placed",true, game.placeShip(0, ShipType.MINESWEEPER, 0, 0, true));
     }
 
     @Test
     public void placeShipOutOfGridTest() {
         game.registerPlayer("Poep", ui, true);
-        assertEquals(false, game.placeShip(0, ShipType.MINESWEEPER, 10, 10, true));
+        assertEquals("Ship placed invalidly",false, game.placeShip(0, ShipType.MINESWEEPER, 10, 10, true));
     }
 
     @Test
-    public void removeShip() {
-
+    public void removeShipTest() {
+        game.registerPlayer("Steen", ui, true);
+        game.placeShip(0, ShipType.MINESWEEPER, 0, 0, false);
+        assertEquals("Ship not removed",true, game.removeShip(0, 0, 0));
     }
 
     @Test
-    public void removeAllShips() {
+    public void removeShipAtEmptyCellTest() {
+        game.registerPlayer("Florp", ui, true);
+        game.placeShip(0, ShipType.MINESWEEPER, 5, 5, true);
+        assertEquals("",false, game.removeShip(0,0,0));
     }
 
     @Test
-    public void notifyWhenReady() {
+    public void removeAllShipsTest() {
+        game.registerPlayer("Kak", ui, true);
+        game.placeShipsAutomatically(0);
+        assertEquals("Not all ships removed",true, game.removeAllShips(0));
+    }
+
+    @Test
+    public void notifyWhenReadyTest() {
+        game.registerPlayer("Senip", ui, true);
+        game.placeShipsAutomatically(0);
+        assertEquals("All ships placed but cant set state to ready",true, game.notifyWhenReady(0));
+    }
+
+    @Test
+    public void notifyWhenReadyNotAllShipsPlacedTest() {
+        game.registerPlayer("Senip", ui, true);
+        game.placeShip(0, ShipType.MINESWEEPER, 0, 0, true);
+        game.placeShip(0, ShipType.CRUISER, 2, 3, false);
+        assertEquals("State set to ready but not all ships placed",false, game.notifyWhenReady(0));
     }
 
     @Test
