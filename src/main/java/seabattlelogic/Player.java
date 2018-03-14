@@ -1,5 +1,7 @@
 package seabattlelogic;
 
+import seabattlegui.ShipType;
+
 public class Player {
 
     Ship[] ships;
@@ -21,6 +23,15 @@ public class Player {
     }
 
     public int getPlayerNr(){ return playerNr;}
+
+    public boolean hasShipFromType(ShipType shipType){
+        for (Ship ship : ships){
+            if (ship.getShipType() == shipType){
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Place a ship at the specified position
