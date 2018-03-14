@@ -6,7 +6,6 @@ import seabattlegui.ISeaBattleGUI;
 import seabattlegui.SeaBattleApplication;
 import seabattlegui.ShipType;
 import seabattlegui.ShotType;
-import sun.plugin2.os.windows.SECURITY_ATTRIBUTES;
 
 import static org.junit.Assert.*;
 
