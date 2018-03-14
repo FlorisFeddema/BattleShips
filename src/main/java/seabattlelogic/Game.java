@@ -7,29 +7,22 @@ public class Game {
     Player[] players;
     private Player playerOnTurn;
 
-    public Game (Player player1){
-        players[0] = player1;
-    }
+    public Game() {
 
-    public Game (Player player1, Player player2){
-        players[0] = player1;
-        players[1] = player2;
     }
 
     public boolean placeShip(int playerNr, ShipType shipType, int bowX, int bowY, boolean horizontal) {
-        throw new UnsupportedOperationException("Method placeShip() not implemented.");
-    }
+        Player player;
+        if (players[0].getPlayerNr() == playerNr) {
+            player = players[0];
+        } else {
+            player = players[1];
+        }
 
-    /**
-     * Move a ship for a player to the specified position
-     * @param player player for whom the ship will be moved
-     * @param ship ship that will be moved
-     * @param position cell at which the ship will be moved
-     * @return true if ship is successfully moved
-     */
-    public boolean moveShip(Player player, Ship ship, Cell position) {
-        // TODO - implement Game.moveShip
-        throw new UnsupportedOperationException();
+        if (player.isShipPlaced(shipType)) {
+            player.removeShip(shipType);
+        }
+        return player.placeShip(shipType, bowX, bowY, horizontal);
     }
 
     /**
