@@ -5,6 +5,7 @@ import org.junit.Test;
 import seabattlegui.ISeaBattleGUI;
 import seabattlegui.SeaBattleApplication;
 import seabattlegui.ShipType;
+import seabattlegui.ShotType;
 import sun.plugin2.os.windows.SECURITY_ATTRIBUTES;
 
 import static org.junit.Assert.*;
@@ -107,14 +108,30 @@ public class SeaBattleGameTest {
     }
 
     @Test
-    public void fireShotPlayer() {
+    public void fireShotPlayerAllSunkTest() {
+        game.registerPlayer("Ok", ui, true);
+        game.placeShip(0, ShipType.MINESWEEPER, 0, 0, true);
+        game.placeShip(0, ShipType.MINESWEEPER, 0, 1, true);
+        assertEquals("First ship not hit", ShotType.HIT, game.fireShotPlayer(0, 0, 0));
+        assertEquals("First ship not sunk", ShotType.SUNK, game.fireShotPlayer(0,1,0));
+        assertEquals("Second ship not hit", ShotType.HIT, game.fireShotPlayer(0, 0, 1));
+        assertEquals("Second ship not sunk", ShotType.ALLSUNK, game.fireShotPlayer(0,1,1));
     }
 
     @Test
-    public void fireShotOpponent() {
+    public void fireShotPlayerMissTest(){
+        game.registerPlayer("Baboon", ui, true);
+        game.placeShip(0, ShipType.AIRCRAFTCARRIER, 0, 0, true);
+        assertEquals("Shot not missed", ShotType.MISSED, game.fireShotPlayer(0, 0, 1));
     }
 
-    @Test
-    public void startNewGame() {
-    }
+    // Deze methode is niet te unit testen, aangezien de positie van het schot door een AI wordt bepaald.
+    //@Test
+    //public void fireShotOpponent() {
+    //}
+
+    // Deze methode is (nog) niet te testen, omdat de speler die geregistreerd staan nog nergens worden opgeslagen
+    //@Test
+    //public void startNewGame() {
+    //}
 }
