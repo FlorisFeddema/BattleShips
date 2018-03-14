@@ -1,10 +1,8 @@
 package seabattlelogic;
 
-import java.util.Collection;
-
 public class Ship {
 
-    Collection<Cell> cells;
+    Cell[] cells;
     private boolean sunk;
 
     public boolean checkIfSunk() {

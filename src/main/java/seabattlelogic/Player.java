@@ -1,10 +1,8 @@
 package seabattlelogic;
 
-import java.util.Collection;
-
 public class Player {
 
-    Collection<Ship> ships;
+    Ship[] ships;
     Grid grid;
     private String name;
     private boolean donePlacing;

@@ -1,11 +1,11 @@
 package seabattlelogic;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
 
 public class Game {
 
-    Collection<Player> players;
+    ArrayList<Player> players;
     private Player playerOnTurn;
 
     /**
