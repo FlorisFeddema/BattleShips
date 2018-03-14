@@ -3,15 +3,17 @@ package seabattlelogic;
 import seabattlegui.ShipType;
 import seabattlegui.SquareState;
 
+import java.util.ArrayList;
+
 public class Ship {
 
-    Cell[] cells;
+    ArrayList<Cell> cells;
     private boolean sunk;
     private ShipType shipType;
 
     public Ship(ShipType shipType) {
         this.shipType = shipType;
-        this.cells = null;
+        this.cells = new ArrayList<>();
         this.sunk = false;
     }
 
@@ -27,20 +29,24 @@ public class Ship {
         if (sunk) {
             return sunk;
         }
-        for (int i = 0; i > cells.length; ) {
-            if (cells[i].getSquareState() == SquareState.SHIP) {
+        for (int i = 0; i > cells.size(); ) {
+            if (cells.get(i).getSquareState() == SquareState.SHIP) {
                 return this.sunk = false;
             }
         }
-        for (int i = 0; i > cells.length; ) {
-            if (cells[i].getSquareState() == SquareState.SHIP) {
+        for (int i = 0; i > cells.size(); ) {
+            if (cells.get(i).getSquareState() == SquareState.SHIP) {
                 return this.sunk = false;
             }
         }
         return this.sunk = true;
     }
 
-    public boolean placeShip(Cell[] cells) {
+    public boolean placeShip(ArrayList<Cell> cells) {
+        if (!isPlaced()){
+            return false;
+        }
+
         for (Cell cell : cells) {
             if (cell.getSquareState() == SquareState.SHIP) {
                 return false;
@@ -49,14 +55,15 @@ public class Ship {
         for (Cell cell : cells) {
             cell.setSquareState(SquareState.SHIP);
         }
+        this.cells = cells;
         return true;
     }
 
     public boolean isPlaced(){
-        return cells != null;
+        return cells.size() != 0;
     }
 
-    public void setCells(Cell[] cells){
+    public void setCells(ArrayList<Cell> cells){
         this.cells = cells;
     }
 

@@ -2,6 +2,8 @@ package seabattlelogic;
 
 import seabattlegui.ShipType;
 
+import java.util.ArrayList;
+
 public class Player {
 
     Ship[] ships;
@@ -42,10 +44,27 @@ public class Player {
 
     public boolean placeShip(ShipType shipType, int bowX, int bowY, boolean isHorizontal) {
         Ship ship = getShipFromType(shipType);
+        int height = 1;
+        int width = 1;
+        if (isHorizontal) {
+            width = ship.getLength();
+        }
+        else{
+            height = ship.getLength();
+        }
 
+        ArrayList<Cell> cellsToAdd = new ArrayList<Cell>();
 
-
-        return false;
+        try {
+            for(int i = bowX; i < bowX + width; i++){
+                for (int j = bowY; j < bowY + height; j++){
+                    cellsToAdd.add(grid.cells[i][j]);
+                }
+            }
+        } catch (IndexOutOfBoundsException ex) {
+            return false;
+        }
+        return ship.placeShip(cellsToAdd);
     }
 
     /**
@@ -55,7 +74,7 @@ public class Player {
     public void removeShip(ShipType shipType) {
         for (Ship ship : ships){
             if (ship.getShipType() == shipType){
-                ship.setCells(null);
+                ship.setCells(new ArrayList<Cell>());
             }
         }
         throw new UnsupportedOperationException();
