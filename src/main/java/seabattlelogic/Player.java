@@ -20,6 +20,8 @@ public class Player {
         return this.name;
     }
 
+    public int getPlayerNr(){ return playerNr;}
+
     /**
      * Place a ship at the specified position
      * @param ship ship to be placed

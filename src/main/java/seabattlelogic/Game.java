@@ -2,9 +2,6 @@ package seabattlelogic;
 
 import seabattlegui.ShipType;
 
-import java.util.ArrayList;
-
-
 public class Game {
 
     Player[] players;
