@@ -52,7 +52,28 @@ public class Ship {
         return true;
     }
 
+    public boolean isPlaced(){
+        return cells != null;
+    }
+
     public void setCells(Cell[] cells){
         this.cells = cells;
+    }
+
+    public int getLength(){
+        switch(shipType){
+            default:
+                return 0;
+            case MINESWEEPER:
+                return 2;
+            case SUBMARINE:
+                return 3;
+            case CRUISER:
+                return 3;
+            case BATTLESHIP:
+                return 4;
+            case AIRCRAFTCARRIER:
+                return 5;
+        }
     }
 }

@@ -26,28 +26,26 @@ public class Player {
 
 
     /**
-     *
-     * @param shipType
-     * @return
+     * Gets ship with specified type from player
+     * @param shipType shiptype from ship
+     * @return ship of specified shiptype
      */
-    public boolean hasShipFromType(ShipType shipType){
+    public Ship getShipFromType(ShipType shipType){
         for (Ship ship : ships){
             if (ship.getShipType() == shipType){
-                return true;
+                return ship;
             }
         }
-        return false;
+        return null;
     }
 
-    /**
-     * Place a ship at the specified position
-     * @param ship ship to be placed
-     * @param position position where the ship will be placed
-     * @return true if ship has been placed correctly
-     */
-    public boolean placeShip(Ship ship, Cell position) {
-        // TODO - implement Player.placeShip
-        throw new UnsupportedOperationException();
+
+    public boolean placeShip(ShipType shipType, int bowX, int bowY, boolean isHorizontal) {
+        Ship ship = getShipFromType(shipType);
+
+
+
+        return false;
     }
 
     /**
@@ -90,4 +88,7 @@ public class Player {
         throw new UnsupportedOperationException();
     }
 
+    public boolean isShipPlaced(ShipType shipType){
+        return getShipFromType(shipType).isPlaced();
+    }
 }
