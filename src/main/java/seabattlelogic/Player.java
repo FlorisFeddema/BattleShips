@@ -24,6 +24,12 @@ public class Player {
 
     public int getPlayerNr(){ return playerNr;}
 
+
+    /**
+     *
+     * @param shipType
+     * @return
+     */
     public boolean hasShipFromType(ShipType shipType){
         for (Ship ship : ships){
             if (ship.getShipType() == shipType){
@@ -46,10 +52,14 @@ public class Player {
 
     /**
      * Remove a specified ship
-     * @param ship ship to be removed
+     * @param shipType shipType to be removed
      */
-    public void removeShip(Ship ship) {
-        // TODO - implement Player.removeShip
+    public void removeShip(ShipType shipType) {
+        for (Ship ship : ships){
+            if (ship.getShipType() == shipType){
+                ship.setCells(null);
+            }
+        }
         throw new UnsupportedOperationException();
     }
 

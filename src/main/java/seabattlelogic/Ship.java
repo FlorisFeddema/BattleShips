@@ -52,4 +52,7 @@ public class Ship {
         return true;
     }
 
+    public void setCells(Cell[] cells){
+        this.cells = cells;
+    }
 }
