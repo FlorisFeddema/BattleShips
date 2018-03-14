@@ -1,5 +1,7 @@
 package seabattlelogic;
 
+import seabattlegui.ShipType;
+
 public class Ship {
 
     Cell[] cells;

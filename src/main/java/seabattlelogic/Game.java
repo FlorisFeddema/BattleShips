@@ -5,8 +5,17 @@ import java.util.ArrayList;
 
 public class Game {
 
-    ArrayList<Player> players;
+    Player[] players;
     private Player playerOnTurn;
+
+    public Game (Player player1){
+        players[0] = player1;
+    }
+
+    public Game (Player player1, Player player2){
+        players[0] = player1;
+        players[1] = player2;
+    }
 
     /**
      * Place a ship for a player at a specified position

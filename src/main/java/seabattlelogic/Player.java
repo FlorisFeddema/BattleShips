@@ -8,6 +8,14 @@ public class Player {
     private boolean donePlacing;
     private int playerNr;
 
+
+    public Player(String name, int playerNr, Grid grid){
+        this.name = name;
+        this.playerNr = playerNr;
+        donePlacing = false;
+        //ships = new Ship[] {}
+    }
+
     public String getName() {
         return this.name;
     }
