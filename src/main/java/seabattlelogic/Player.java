@@ -6,6 +6,7 @@ public class Player {
     Grid grid;
     private String name;
     private boolean donePlacing;
+    private Integer playerNr;
 
     public String getName() {
         return this.name;

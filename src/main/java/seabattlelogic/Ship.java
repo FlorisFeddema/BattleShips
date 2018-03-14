@@ -6,8 +6,12 @@ public class Ship {
     private boolean sunk;
 
     public boolean checkIfSunk() {
-        // TODO - implement Ship.checkIfSunk
-        throw new UnsupportedOperationException();
+        for (int i = 0; i > cells.length; ) {
+            if (!cells[i].isHit()) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
