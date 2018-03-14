@@ -8,12 +8,19 @@ package seabattlegame;
 import seabattlegui.ISeaBattleGUI;
 import seabattlegui.ShipType;
 import seabattlegui.ShotType;
+import seabattlelogic.Game;
 
 /**
  * The Sea Battle game. To be implemented.
  * @author Nico Kuijpers
  */
 public class SeaBattleGame implements ISeaBattleGame {
+
+    Game game;
+
+    public SeaBattleGame() {
+        game = new Game();
+    }
 
     @Override
     public int registerPlayer(String name, ISeaBattleGUI application, boolean singlePlayerMode) {
@@ -27,7 +34,7 @@ public class SeaBattleGame implements ISeaBattleGame {
 
     @Override
     public boolean placeShip(int playerNr, ShipType shipType, int bowX, int bowY, boolean horizontal) {
-        throw new UnsupportedOperationException("Method placeShip() not implemented.");
+        return game.placeShip(playerNr, shipType, bowX, bowY, horizontal);
     }
 
     @Override
