@@ -9,9 +9,11 @@ public class Game {
     private Player playerOnTurn;
 
     /**
-     * @param player
-     * @param ship
-     * @param position
+     * Place a ship for a player at a specified position
+     * @param player player for whom the ship will be placed
+     * @param ship ship that will be placed
+     * @param position cell at which the ship will be placed
+     * @return true if ship is successfully placed
      */
     public boolean placeShip(Player player, Ship ship, Cell position) {
         // TODO - implement Game.placeShip
@@ -19,9 +21,11 @@ public class Game {
     }
 
     /**
-     * @param player
-     * @param ship
-     * @param position
+     * Move a ship for a player to the specified position
+     * @param player player for whom the ship will be moved
+     * @param ship ship that will be moved
+     * @param position cell at which the ship will be moved
+     * @return true if ship is successfully moved
      */
     public boolean moveShip(Player player, Ship ship, Cell position) {
         // TODO - implement Game.moveShip
@@ -29,8 +33,9 @@ public class Game {
     }
 
     /**
-     * @param player
-     * @param ship
+     * Rotate the selected ship for a player
+     * @param player player for whom the ship will be rotated
+     * @param ship ship that will be rotated
      */
     public void rotateShip(Player player, Ship ship) {
         // TODO - implement Game.rotateShip
@@ -38,8 +43,9 @@ public class Game {
     }
 
     /**
-     * @param player
-     * @param ship
+     * Removes a ship for a player
+     * @param player player for whom the ship will be removed
+     * @param ship ship that will be removed
      */
     public void removeShip(Player player, Ship ship) {
         // TODO - implement Game.removeShip
@@ -47,7 +53,8 @@ public class Game {
     }
 
     /**
-     * @param player
+     * Indicate that a player has placed all ship and is ready to play
+     * @param player player that is ready to play
      */
     public void setStateToReady(Player player) {
         // TODO - implement Game.setStateToReady
@@ -55,8 +62,10 @@ public class Game {
     }
 
     /**
+     * Fires a shot for a player at the specified position
      * @param player
      * @param cell
+     * @return true if the fired shot hit a ship
      */
     public boolean fireShot(Player player, Cell cell) {
         // TODO - implement Game.fireShot
