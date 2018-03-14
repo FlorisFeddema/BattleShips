@@ -2,22 +2,11 @@ package seabattlelogic;
 
 import seabattlegui.ShipType;
 
-import java.util.ArrayList;
-
 
 public class Game {
 
     Player[] players;
     private Player playerOnTurn;
-
-    public Game (Player player1){
-        players[0] = player1;
-    }
-
-    public Game (Player player1, Player player2){
-        players[0] = player1;
-        players[1] = player2;
-    }
 
     public boolean placeShip(int playerNr, ShipType shipType, int bowX, int bowY, boolean horizontal) {
         throw new UnsupportedOperationException("Method placeShip() not implemented.");
