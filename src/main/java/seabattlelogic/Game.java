@@ -1,5 +1,7 @@
 package seabattlelogic;
 
+import seabattlegui.ShipType;
+
 import java.util.ArrayList;
 
 
@@ -17,16 +19,8 @@ public class Game {
         players[1] = player2;
     }
 
-    /**
-     * Place a ship for a player at a specified position
-     * @param player player for whom the ship will be placed
-     * @param ship ship that will be placed
-     * @param position cell at which the ship will be placed
-     * @return true if ship is successfully placed
-     */
-    public boolean placeShip(Player player, Ship ship, Cell position) {
-        // TODO - implement Game.placeShip
-        throw new UnsupportedOperationException();
+    public boolean placeShip(int playerNr, ShipType shipType, int bowX, int bowY, boolean horizontal) {
+        throw new UnsupportedOperationException("Method placeShip() not implemented.");
     }
 
     /**
