@@ -3,7 +3,8 @@ package seabattlelogic;
 public class Grid {
 
     Cell[][] cells;
-    private int height;
-    private int width;
 
+    public Grid(int width, int height) {
+        this.cells = new Cell[width][height];
+    }
 }

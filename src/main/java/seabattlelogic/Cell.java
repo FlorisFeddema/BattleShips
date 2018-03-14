@@ -1,41 +1,19 @@
 package seabattlelogic;
 
+import seabattlegui.SquareState;
+
 public class Cell {
+    private SquareState squareState;
 
-    /**
-     * Gets the hit property of the cell
-     * @return true if cell is hit
-     */
-    public boolean isHit() {
-        return hit;
+    public Cell(SquareState squareState) {
+        this.squareState = squareState;
     }
 
-    /**
-     * Sets the hit property of the cell
-     * @param hit
-     */
-    public void setHit(boolean hit) {
-        this.hit = hit;
+    public SquareState getSquareState() {
+        return squareState;
     }
 
-    private boolean hit;
-
-    /**
-     * Gets the containsShip property
-     * @return true if cell contains a ship
-     */
-    public boolean isContainsShip() {
-        return containsShip;
+    public void setSquareState(SquareState squareState) {
+        this.squareState = squareState;
     }
-
-    /**
-     * Set the containsShip property
-     * @param containsShip
-     */
-    public void setContainsShip(boolean containsShip) {
-        this.containsShip = containsShip;
-    }
-
-    private boolean containsShip;
-
 }
