@@ -5,8 +5,8 @@ import seabattlegui.SquareState;
 public class Cell {
     private SquareState squareState;
 
-    public Cell(SquareState squareState) {
-        this.squareState = squareState;
+    public Cell() {
+        this.squareState = SquareState.WATER;
     }
 
     public SquareState getSquareState() {

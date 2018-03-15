@@ -6,18 +6,24 @@ import java.util.ArrayList;
 
 public class Player {
 
-    Ship[] ships;
-    Grid grid;
+    private Ship[] ships;
+    private Grid grid;
     private String name;
     private boolean donePlacing;
     private int playerNr;
 
 
-    public Player(String name, int playerNr, Grid grid){
+    public Player(String name, int playerNr) {
         this.name = name;
         this.playerNr = playerNr;
         donePlacing = false;
-        //ships = new Ship[] {}
+        this.grid = new Grid(10, 10);
+        ships = new Ship[5];
+        ships[0] = new Ship(ShipType.MINESWEEPER);
+        ships[1] = new Ship(ShipType.SUBMARINE);
+        ships[2] = new Ship(ShipType.CRUISER);
+        ships[3] = new Ship(ShipType.BATTLESHIP);
+        ships[4] = new Ship(ShipType.AIRCRAFTCARRIER);
     }
 
     public String getName() {
@@ -41,7 +47,16 @@ public class Player {
         return null;
     }
 
-
+    /**
+     * Places a ship on the selected x and y position, with the correct type and correct length.
+     * Direction is based on Horizontal. If a ship of this type exists we will remove it from the grid
+     *
+     * @param shipType     Type of the ship
+     * @param bowX         X start position
+     * @param bowY         Y start position
+     * @param isHorizontal direction ship is placed in.
+     * @return
+     */
     public boolean placeShip(ShipType shipType, int bowX, int bowY, boolean isHorizontal) {
         Ship ship = getShipFromType(shipType);
         int height = 1;
@@ -57,8 +72,8 @@ public class Player {
 
         try {
             for(int i = bowX; i < bowX + width; i++){
-                for (int j = bowY; j < bowY + height; j++){
-                    cellsToAdd.add(grid.cells[i][j]);
+                for (int j = bowY; j < bowY + height; j++) {
+                    cellsToAdd.add(grid.getCells()[i][j]);
                 }
             }
         } catch (IndexOutOfBoundsException ex) {
@@ -73,11 +88,28 @@ public class Player {
      */
     public void removeShip(ShipType shipType) {
         for (Ship ship : ships){
-            if (ship.getShipType() == shipType){
-                ship.setCells(new ArrayList<Cell>());
+            if (ship.getShipType() == shipType) {
+                ship.removeShip();
             }
         }
-        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * removes a ship that is on the selected position on the grid
+     *
+     * @param posX the x position, 0 based
+     * @param posY the y position, 0 based
+     * @return if the removal was succesfull or not
+     */
+    public boolean removeShip(int posX, int posY) {
+        Cell cell = grid.getCells()[posX][posY];
+        for (Ship ship : ships) {
+            if (ship.isOnCell(cell)) {
+                ship.removeShip();
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -107,7 +139,29 @@ public class Player {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * gets if a ship with the type is placed on the grid
+     * @param shipType type to check for
+     * @return if the ship is placed
+     */
     public boolean isShipPlaced(ShipType shipType){
         return getShipFromType(shipType).isPlaced();
+    }
+
+    public Grid getGrid() {
+        return grid;
+    }
+
+    public Ship[] getShips() {
+        return ships;
+    }
+
+    public boolean allShipsPlaced() {
+        for (Ship ship : ships) {
+            if (!ship.isPlaced()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -43,7 +43,7 @@ public class Ship {
     }
 
     public boolean placeShip(ArrayList<Cell> cells) {
-        if (!isPlaced()){
+        if (isPlaced()) {
             return false;
         }
 
@@ -59,12 +59,23 @@ public class Ship {
         return true;
     }
 
+    public boolean isOnCell(Cell cell) {
+        return cells.contains(cell);
+    }
+
     public boolean isPlaced(){
         return cells.size() != 0;
     }
 
     public void setCells(ArrayList<Cell> cells){
         this.cells = cells;
+    }
+
+    public void removeShip() {
+        for (Cell cell : cells) {
+            cell.setSquareState(SquareState.WATER);
+        }
+        setCells(new ArrayList<>());
     }
 
     public int getLength(){
