@@ -8,10 +8,9 @@ package seabattlegame;
 import seabattlegui.ISeaBattleGUI;
 import seabattlegui.ShipType;
 import seabattlegui.ShotType;
+import seabattlegui.SquareState;
 import seabattlelogic.Cell;
 import seabattlelogic.Game;
-
-import java.util.Random;
 
 /**
  * The Sea Battle game. To be implemented.
@@ -30,12 +29,12 @@ public class SeaBattleGame implements ISeaBattleGame {
     public int registerPlayer(String name, ISeaBattleGUI application, boolean singlePlayerMode) {
         this.application = application;
         int playerNr = game.registerPlayer(name, singlePlayerMode);
+        application.setOpponentName(playerNr, game.getPlayerByNr(1 - playerNr).getName());
         return playerNr;
     }
 
     @Override
     public boolean placeShipsAutomatically(int playerNr) {
-        Random random = new Random();
         game.placeShipsRandom(playerNr);
         refreshGrid(playerNr);
         return true;
@@ -71,17 +70,32 @@ public class SeaBattleGame implements ISeaBattleGame {
 
     @Override
     public ShotType fireShotPlayer(int playerNr, int posX, int posY) {
-        throw new UnsupportedOperationException("Method fireShotPlayer() not implemented.");
+        System.out.println("\n\n<-- New Turn -->\n");
+        ShotType shot = game.fireShot(playerNr, posX, posY);
+        System.out.println("Result of the player shot: " + shot);
+        refreshOppenentGrid(playerNr);
+        return shot;
     }
 
     @Override
     public ShotType fireShotOpponent(int playerNr) {
-        throw new UnsupportedOperationException("Method fireShotOpponent() not implemented.");
+        ShotType shot = game.fireShotOpponent(playerNr);
+        refreshGrid(playerNr);
+        System.out.println("Result of the opponent shot:" + shot);
+        application.opponentFiresShot(playerNr, shot);
+        return ShotType.MISSED;
     }
 
     @Override
     public boolean startNewGame(int playerNr) {
-        throw new UnsupportedOperationException("Method startNewGame() not implemented.");
+        game = new Game();
+        for (int i = 0; i <= 9; i++) {
+            for (int j = 0; j <= 9; j++) {
+                application.showSquareOpponent(playerNr, i, j, SquareState.WATER);
+                application.showSquarePlayer(playerNr, i, j, SquareState.WATER);
+            }
+        }
+        return true;
     }
 
     private void refreshGrid(int playerNr) {
@@ -89,6 +103,16 @@ public class SeaBattleGame implements ISeaBattleGame {
             for (int j = 0; j <= 9; j++) {
                 Cell cell = game.getPlayerGrid(playerNr).getCells()[i][j];
                 application.showSquarePlayer(playerNr, i, j, cell.getSquareState());
+            }
+        }
+    }
+
+    private void refreshOppenentGrid(int playerNr) {
+        for (int i = 0; i <= 9; i++) {
+            for (int j = 0; j <= 9; j++) {
+                Cell cell = game.getPlayerGrid(1 - playerNr).getCells()[i][j];
+                if (cell.getSquareState() != SquareState.SHIP)
+                    application.showSquareOpponent(playerNr, i, j, cell.getSquareState());
             }
         }
     }

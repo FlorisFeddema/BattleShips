@@ -8,13 +8,12 @@ import java.util.ArrayList;
 public class Ship {
 
     ArrayList<Cell> cells;
-    private boolean sunk;
     private ShipType shipType;
+    private boolean sunk;
 
     public Ship(ShipType shipType) {
         this.shipType = shipType;
         this.cells = new ArrayList<>();
-        this.sunk = false;
     }
 
     public ShipType getShipType() {
@@ -26,20 +25,19 @@ public class Ship {
      * @return true if ship has sunk
      */
     public boolean checkIfSunk() {
+        boolean sunk = true;
+        for (int i = 0; i < cells.size(); i++) {
+            if (cells.get(i).getSquareState() == SquareState.SHIP) {
+                sunk = false;
+            }
+        }
         if (sunk) {
-            return sunk;
-        }
-        for (int i = 0; i > cells.size(); ) {
-            if (cells.get(i).getSquareState() == SquareState.SHIP) {
-                return this.sunk = false;
+            for (int i = 0; i < cells.size(); i++) {
+                cells.get(i).setSquareState(SquareState.SHIPSUNK);
             }
         }
-        for (int i = 0; i > cells.size(); ) {
-            if (cells.get(i).getSquareState() == SquareState.SHIP) {
-                return this.sunk = false;
-            }
-        }
-        return this.sunk = true;
+        this.sunk = sunk;
+        return sunk;
     }
 
     public boolean placeShip(ArrayList<Cell> cells) {
@@ -69,6 +67,10 @@ public class Ship {
 
     public void setCells(ArrayList<Cell> cells){
         this.cells = cells;
+    }
+
+    public boolean isSunk() {
+        return sunk;
     }
 
     public void removeShip() {

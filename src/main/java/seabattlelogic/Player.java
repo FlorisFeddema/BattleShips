@@ -1,6 +1,8 @@
 package seabattlelogic;
 
 import seabattlegui.ShipType;
+import seabattlegui.ShotType;
+import seabattlegui.SquareState;
 
 import java.util.ArrayList;
 
@@ -9,14 +11,14 @@ public class Player {
     private Ship[] ships;
     private Grid grid;
     private String name;
-    private boolean donePlacing;
+    private boolean ready;
     private int playerNr;
 
 
     public Player(String name, int playerNr) {
         this.name = name;
         this.playerNr = playerNr;
-        donePlacing = false;
+        ready = false;
         this.grid = new Grid(10, 10);
         ships = new Ship[5];
         ships[0] = new Ship(ShipType.MINESWEEPER);
@@ -116,27 +118,53 @@ public class Player {
      * Set a players state to ready
      */
     public void setStateToReady() {
-        // TODO - implement Player.setStateToReady
-        throw new UnsupportedOperationException();
+        ready = true;
     }
 
-    /**
-     * Fires a shot at the specified position
-     * @param cell position where the shot will be fired at
-     * @return true if shot was successfully fired
-     */
-    public boolean fireShot(Cell cell) {
-        // TODO - implement Player.fireShot
-        throw new UnsupportedOperationException();
+    public ShotType fireShot(int posX, int posY) {
+        ShotType shot = ShotType.HIT;
+        Cell cell = grid.getCell(posX, posY);
+        SquareState squareState = cell.getSquareState();
+        switch (squareState) {
+            case WATER:
+                shot = ShotType.MISSED;
+                cell.setSquareState(SquareState.SHOTMISSED);
+                break;
+            case SHOTMISSED:
+                shot = ShotType.MISSED;
+                break;
+            case SHOTHIT:
+                shot = ShotType.HIT;
+                break;
+            case SHIPSUNK:
+                shot = ShotType.SUNK;
+                break;
+            case SHIP:
+                cell.setSquareState(SquareState.SHOTHIT);
+                shot = CheckIfShipSunk(cell);
+                if (shot != ShotType.HIT) {
+                    cell.setSquareState(SquareState.SHIPSUNK);
+                }
+                break;
+        }
+        return shot;
     }
 
-    /**
-     * Checks if a player lost
-     * @return true if the player lost
-     */
-    public void checkIfLost() {
-        // TODO - implement Player.checkIfLost
-        throw new UnsupportedOperationException();
+    private ShotType CheckIfShipSunk(Cell cell) {
+        ShotType shot = ShotType.HIT;
+        for (Ship ship : ships) {
+            if (ship.isOnCell(cell)) {
+                if (ship.checkIfSunk()) {
+                    shot = ShotType.SUNK;
+                }
+            }
+        }
+        for (Ship ship : ships) {
+            if (!ship.isSunk()) {
+                return shot;
+            }
+        }
+        return ShotType.ALLSUNK;
     }
 
     /**

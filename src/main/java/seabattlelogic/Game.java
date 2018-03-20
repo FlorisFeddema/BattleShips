@@ -1,6 +1,7 @@
 package seabattlelogic;
-
 import seabattlegui.ShipType;
+import seabattlegui.ShotType;
+import seabattlegui.SquareState;
 
 import java.util.Random;
 
@@ -10,16 +11,27 @@ public class Game {
     private int playerOnTurn;
     private boolean singlePlayerMode;
 
+    private Grid aiGrid;
+
     public Game() {
         players = new Player[2];
         //select a random turn
         playerOnTurn = new Random().nextInt(2);
     }
 
+
+    /**
+     * registers a player and sets the game to single or multiplayer
+     *
+     * @param name
+     * @param singlePlayerMode
+     * @return the id of the registered player
+     */
     public int registerPlayer(String name, boolean singlePlayerMode) {
         this.singlePlayerMode = singlePlayerMode;
         if (players[0] == null) {
             players[0] = new Player(name, 0);
+            registerAi();
             return 0;
         } else {
             if (!players[0].getName().equals(name)) {
@@ -31,13 +43,21 @@ public class Game {
         }
     }
 
+    private void registerAi() {
+        if (singlePlayerMode) {
+            players[1] = new Player("AI bot", 1);
+            setupAi(players[1].getPlayerNr());
+            players[1].setStateToReady();
+            System.out.println("ai ready to play");
+        }
+    }
+
     /**
      * Gets the player with the playerNr.
-     *
      * @param playerNr 1 or 0, depending on the player
      * @return return the player with the playerNr
      */
-    private Player getPlayerByNr(int playerNr) {
+    public Player getPlayerByNr(int playerNr) {
         if (playerNr > 1) {
             throw new IllegalArgumentException();
         }
@@ -50,7 +70,6 @@ public class Game {
 
     /**
      * Places a ship on the grid of the player.
-     *
      * @param playerNr   nr of the player where the ship should be placed on
      * @param shipType   the type of the ship
      * @param bowX       the min value of the x position
@@ -66,7 +85,6 @@ public class Game {
         }
         return player.placeShip(shipType, bowX, bowY, horizontal);
     }
-
 
     /**
      * Removes a ship for a player.
@@ -85,31 +103,204 @@ public class Game {
      */
     public boolean setStateToReady(int playerNr) {
         boolean succes = getPlayerByNr(playerNr).allShipsPlaced();
-        if (singlePlayerMode) {
-            players[1] = new Player("AI bot", 1);
-            placeShipsRandom(1);
+        if (succes) {
+            getPlayerByNr(playerNr).setStateToReady();
         }
-
         return succes;
     }
 
     /**
-     * Fires a shot for a player at the specified position.
-     * @param playerNr
-     * @return true if the fired shot hit a ship
+     * sets up the ai
+     *
+     * @param playerNr player id of the ai
      */
-    public boolean fireShot(int playerNr) {
-        // TODO - implement Game.fireShot
-        throw new UnsupportedOperationException();
+    private void setupAi(int playerNr) {
+        placeShipsRandom(playerNr);
+        aiGrid = new Grid(10, 10);
+        Player player = getPlayerByNr(playerNr);
+        player.setStateToReady();
     }
 
+    /**
+     * fires a shot on the players grid at the selected position
+     *
+     * @param playerNr id of the player
+     * @param posX     x position
+     * @param posY     y position
+     * @return the result of the shot
+     */
+    public ShotType fireShot(int playerNr, int posX, int posY) {
+        Player player = getPlayerByNr(1 - playerNr);
+        return player.fireShot(posX, posY);
+    }
+
+    private boolean CheckCellHit(int xCell, int yCell) {
+        try {
+            if (aiGrid.getCell(xCell, yCell).getSquareState() == SquareState.SHOTHIT) {
+                return true;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            //ignore
+        }
+        return false;
+    }
+
+    public ShotType fireShotOpponent(int playerNr) {
+        System.out.println("\n<--Ai generated code-->");
+        Random random = new Random();
+        int x = random.nextInt(10);
+        int y = random.nextInt(10);
+
+        Cell cell = aiGrid.getCellHit();
+
+        //no ship hit, pick random next shot
+        if (cell == null) {
+            System.out.println("Calculating a semi-random hit");
+            cell = aiGrid.getCell(x, y);
+            while (cell.getSquareState() != SquareState.WATER) {
+                System.out.println("Generating next semi-random target");
+                x = random.nextInt(10);
+                y = random.nextInt(10);
+                cell = aiGrid.getCell(x, y);
+            }
+
+        } else {
+            //a ship is hit, calculate next shot
+            int xCell = aiGrid.getCellX(cell);
+            int yCell = aiGrid.getCellY(cell);
+
+            System.out.println("Starting X: " + xCell);
+            System.out.println("Starting Y: " + yCell);
+
+            boolean horizontal = false;
+            boolean vertical = false;
+
+            if (CheckCellHit(xCell, yCell + 1) || CheckCellHit(xCell, yCell - 1)) {
+                System.out.println("Ship is placed vertical");
+                vertical = true;
+            }
+
+            if (CheckCellHit(xCell + 1, yCell) || CheckCellHit(xCell - 1, yCell)) {
+                System.out.println("Ship is placed horizontal");
+                horizontal = true;
+            }
+
+            //ship is horizontal
+            if (horizontal) {
+                System.out.println("Calculating horizontal shot");
+                int i = 0;
+                Cell target;
+
+                try {
+                    target = aiGrid.getCell(xCell - 1, yCell);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    i++;
+                    target = aiGrid.getCell(xCell + i, yCell);
+                }
+
+                while (target.getSquareState() != SquareState.WATER) {
+                    i++;
+                    target = aiGrid.getCell(xCell + i, yCell);
+                }
+                x = aiGrid.getCellX(target);
+                y = aiGrid.getCellY(target);
+            }
+
+            //ship is vertical
+            if (vertical) {
+                System.out.println("Calculating vertical shot");
+                int i = 0;
+                Cell target;
+
+                try {
+                    target = aiGrid.getCell(xCell, yCell - 1);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    i++;
+                    target = aiGrid.getCell(xCell, yCell + i);
+                }
+
+                while (target.getSquareState() != SquareState.WATER) {
+                    i++;
+                    target = aiGrid.getCell(xCell, yCell + i);
+                }
+                x = aiGrid.getCellX(target);
+                y = aiGrid.getCellY(target);
+            }
+
+            //pick a side from the origin
+            if (!vertical && !horizontal) {
+                System.out.println("Single Unit");
+                if (aiGrid.checkIfCellWater(xCell - 1, yCell)) {
+                    x = aiGrid.getCellX(aiGrid.getCell(xCell - 1, yCell));
+                    y = aiGrid.getCellY(aiGrid.getCell(xCell - 1, yCell));
+                } else if (aiGrid.checkIfCellWater(xCell, yCell - 1)) {
+                    x = aiGrid.getCellX(aiGrid.getCell(xCell, yCell - 1));
+                    y = aiGrid.getCellY(aiGrid.getCell(xCell, yCell - 1));
+                } else if (aiGrid.checkIfCellWater(xCell + 1, yCell)) {
+                    x = aiGrid.getCellX(aiGrid.getCell(xCell + 1, yCell));
+                    y = aiGrid.getCellY(aiGrid.getCell(xCell + 1, yCell));
+                } else if (aiGrid.checkIfCellWater(xCell, yCell + 1)) {
+                    x = aiGrid.getCellX(aiGrid.getCell(xCell, yCell + 1));
+                    y = aiGrid.getCellY(aiGrid.getCell(xCell, yCell + 1));
+                }
+            }
+        }
+
+        //shoot
+        ShotType shot = fireShot(1 - playerNr, x, y);
+        SquareState state = convertShotTypeToSquareState(shot);
+        aiGrid.getCell(x, y).setSquareState(state);
+
+        System.out.println("Target X: " + x);
+        System.out.println("Target Y: " + y);
+
+        //update grid with shipsunk
+        Player player = getPlayerByNr(playerNr);
+        Grid playerGrid = player.getGrid();
+        for (int i = 0; i < playerGrid.getCells().length; i++) {
+            for (int j = 0; j < playerGrid.getCells()[0].length; j++) {
+                if (playerGrid.getCell(i, j).getSquareState() == SquareState.SHIPSUNK) {
+                    aiGrid.getCell(i, j).setSquareState(SquareState.SHIPSUNK);
+                }
+            }
+        }
+        System.out.println("<--------------------->\n");
+        return shot;
+    }
+
+    /**
+     * converts a ShotType to a SquareState
+     * @param shot shot to convert
+     * @return the converted value
+     */
+    private SquareState convertShotTypeToSquareState(ShotType shot) {
+        switch (shot) {
+            default:
+                return SquareState.SHOTMISSED;
+            case MISSED:
+                return SquareState.SHOTMISSED;
+            case HIT:
+                return SquareState.SHOTHIT;
+            case SUNK:
+                return SquareState.SHIPSUNK;
+            case ALLSUNK:
+                return SquareState.SHIPSUNK;
+
+        }
+    }
+
+
+    /**
+     * return the grid of the selected player
+     * @param playerNr id of the player
+     * @return the grid of the player
+     */
     public Grid getPlayerGrid(int playerNr) {
         return getPlayerByNr(playerNr).getGrid();
     }
 
     /**
      * removes al the ships from the player.
-     *
      * @param playerNr player to remove the ships for
      */
     public void removeAllShips(int playerNr) {

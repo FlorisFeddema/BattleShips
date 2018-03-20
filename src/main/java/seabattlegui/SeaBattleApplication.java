@@ -5,7 +5,6 @@
  */
 package seabattlegui;
 
-import seabattlegame.ISeaBattleGame;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -14,18 +13,13 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import seabattlegame.ISeaBattleGame;
 import seabattlegame.SeaBattleGame;
 
 /**
@@ -595,7 +589,7 @@ public class SeaBattleApplication extends Application implements ISeaBattleGUI {
      * Set the color of the square according to position type.
      * Setting the color will be performed by the JavaFX Application Thread.
      * @param square the square of which the color should be changed.
-     * @param type position type to determine the color.
+     * @param squareState position type to determine the color.
      */
     private void setSquareColor(final Rectangle square, final SquareState squareState) {
         // Ensure that changing the color of the square is performed by
