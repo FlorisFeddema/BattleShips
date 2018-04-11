@@ -584,7 +584,12 @@ public class SeaBattleApplication extends Application implements ISeaBattleGUI {
             } 
         });
     }
-    
+
+    @Override
+    public void EnterPlaymode() {
+        playingMode = true;
+    }
+
     /**
      * Set the color of the square according to position type.
      * Setting the color will be performed by the JavaFX Application Thread.
@@ -679,8 +684,8 @@ public class SeaBattleApplication extends Application implements ISeaBattleGUI {
      */
     private void notifyWhenReady() {
         // Notify that the player is ready is start the game.
-        playingMode = game.notifyWhenReady(playerNr);
-        if (playingMode) {
+        boolean ready = game.notifyWhenReady(playerNr);
+        if (ready) {
             labelHorizontalVertical.setDisable(true);
             radioHorizontal.setDisable(true);
             radioVertical.setDisable(true);

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package seabattlegame;
 
 import seabattlegui.ISeaBattleGUI;
@@ -19,17 +14,24 @@ import seabattlelogic.Game;
 public class SeaBattleGame implements ISeaBattleGame {
 
     Game game;
+
+    public ISeaBattleGUI getApplication() {
+        return application;
+    }
+
     ISeaBattleGUI application;
 
     public SeaBattleGame() {
-        game = new Game();
+        game = new Game(this);
     }
 
     @Override
     public int registerPlayer(String name, ISeaBattleGUI application, boolean singlePlayerMode) {
         this.application = application;
         int playerNr = game.registerPlayer(name, singlePlayerMode);
-        application.setOpponentName(playerNr, game.getPlayerByNr(1 - playerNr).getName());
+        if (singlePlayerMode) {
+            application.setOpponentName(playerNr, game.getPlayerByNr(1 - playerNr).getName());
+        }
         return playerNr;
     }
 
@@ -88,7 +90,7 @@ public class SeaBattleGame implements ISeaBattleGame {
 
     @Override
     public boolean startNewGame(int playerNr) {
-        game = new Game();
+        game = new Game(this);
         for (int i = 0; i <= 9; i++) {
             for (int j = 0; j <= 9; j++) {
                 application.showSquareOpponent(playerNr, i, j, SquareState.WATER);
@@ -115,5 +117,11 @@ public class SeaBattleGame implements ISeaBattleGame {
                     application.showSquareOpponent(playerNr, i, j, cell.getSquareState());
             }
         }
+    }
+
+    public void fireShotMultiplayer(ShotType result, int x, int y) {
+        refreshGrid(game.getApplicationPlayer().getPlayerNr());
+        System.out.println("Result of the opponent shot:" + result);
+        application.opponentFiresShot(game.getApplicationPlayer().getPlayerNr(), result);
     }
 }

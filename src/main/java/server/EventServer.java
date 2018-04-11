@@ -6,7 +6,6 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
 import javax.websocket.server.ServerContainer;
-import java.io.IOException;
 
 public class EventServer {
     public static void main(String[] args){

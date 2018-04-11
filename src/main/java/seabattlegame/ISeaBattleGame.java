@@ -113,4 +113,5 @@ public interface ISeaBattleGame {
      * @return true if a new game is started successfully
      */
     public boolean startNewGame(int playerNr);
+
 }

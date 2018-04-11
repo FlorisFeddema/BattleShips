@@ -10,10 +10,12 @@ public class Ship {
     ArrayList<Cell> cells;
     private ShipType shipType;
     private boolean sunk;
+    private Grid grid;
 
-    public Ship(ShipType shipType) {
+    public Ship(ShipType shipType, Grid grid) {
         this.shipType = shipType;
         this.cells = new ArrayList<>();
+        this.grid = grid;
     }
 
     public ShipType getShipType() {
@@ -95,5 +97,16 @@ public class Ship {
             case AIRCRAFTCARRIER:
                 return 5;
         }
+    }
+
+    public Cell getAnchor() {
+        return cells.get(0);
+    }
+
+    public boolean isHorizontal() {
+        if (grid.getCellX(cells.get(0)) == grid.getCellY(cells.get(1))) {
+            return true;
+        }
+        return false;
     }
 }

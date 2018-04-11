@@ -10,6 +10,11 @@ public class Player {
 
     private Ship[] ships;
     private Grid grid;
+
+    public boolean isReady() {
+        return ready;
+    }
+
     private String name;
     private boolean ready;
     private int playerNr;
@@ -21,11 +26,11 @@ public class Player {
         ready = false;
         this.grid = new Grid(10, 10);
         ships = new Ship[5];
-        ships[0] = new Ship(ShipType.MINESWEEPER);
-        ships[1] = new Ship(ShipType.SUBMARINE);
-        ships[2] = new Ship(ShipType.CRUISER);
-        ships[3] = new Ship(ShipType.BATTLESHIP);
-        ships[4] = new Ship(ShipType.AIRCRAFTCARRIER);
+        ships[0] = new Ship(ShipType.MINESWEEPER, grid);
+        ships[1] = new Ship(ShipType.SUBMARINE, grid);
+        ships[2] = new Ship(ShipType.CRUISER, grid);
+        ships[3] = new Ship(ShipType.BATTLESHIP, grid);
+        ships[4] = new Ship(ShipType.AIRCRAFTCARRIER, grid);
     }
 
     public String getName() {

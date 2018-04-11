@@ -1,43 +1,75 @@
 package seabattlelogic;
+
+import client.EventClientSocket;
+import com.google.gson.JsonObject;
+import seabattlegame.SeaBattleGame;
 import seabattlegui.ShipType;
 import seabattlegui.ShotType;
 import seabattlegui.SquareState;
 
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class Game {
 
     Player[] players;
-    private int playerOnTurn;
     private boolean singlePlayerMode;
+    private EventClientSocket session;
 
+    SeaBattleGame battleGame;
     private Grid aiGrid;
 
-    public Game() {
+    public Game(SeaBattleGame battleGame) {
+        this.battleGame = battleGame;
         players = new Player[2];
-        //select a random turn
-        playerOnTurn = new Random().nextInt(2);
     }
 
+    public Player getApplicationPlayer() {
+        return players[0];
+    }
 
     /**
      * registers a player and sets the game to single or multiplayer
-     *
      * @param name
      * @param singlePlayerMode
      * @return the id of the registered player
      */
     public int registerPlayer(String name, boolean singlePlayerMode) {
         this.singlePlayerMode = singlePlayerMode;
-        if (players[0] == null) {
-            players[0] = new Player(name, 0);
-            registerAi();
-            return 0;
-        } else {
-            if (!players[0].getName().equals(name)) {
-                players[1] = new Player(name, 1);
-                return 1;
+        if (singlePlayerMode) {
+            if (players[0] == null) {
+                players[0] = new Player(name, 0);
+                registerAi();
+                return 0;
             } else {
+                if (!players[0].getName().equals(name)) {
+                    players[1] = new Player(name, 1);
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }
+        } else {
+            //connect to server
+            if (session == null) {
+                session = new EventClientSocket(this, name);
+            }
+            try {
+                //get id from server
+                try {
+                    int id = session.playerId.poll(1, TimeUnit.SECONDS);
+                    //check name taken
+                    if (id > -1) {
+                        System.out.println("Id " + name + ": " + id);
+                        players[0] = new Player(name, id);
+                    }
+                    return id;
+
+                } catch (NullPointerException ex) {
+                    return -1;
+                }
+
+            } catch (InterruptedException e) {
                 return -1;
             }
         }
@@ -47,7 +79,7 @@ public class Game {
         if (singlePlayerMode) {
             players[1] = new Player("AI bot", 1);
             setupAi(players[1].getPlayerNr());
-            players[1].setStateToReady();
+            //players[1].setStateToReady();
             System.out.println("ai ready to play");
         }
     }
@@ -106,6 +138,10 @@ public class Game {
         if (succes) {
             getPlayerByNr(playerNr).setStateToReady();
         }
+        if (!singlePlayerMode) {
+            session.sendReady();
+        }
+        setGameReady();
         return succes;
     }
 
@@ -119,6 +155,7 @@ public class Game {
         aiGrid = new Grid(10, 10);
         Player player = getPlayerByNr(playerNr);
         player.setStateToReady();
+        setGameReady();
     }
 
     /**
@@ -131,7 +168,43 @@ public class Game {
      */
     public ShotType fireShot(int playerNr, int posX, int posY) {
         Player player = getPlayerByNr(1 - playerNr);
-        return player.fireShot(posX, posY);
+        if (singlePlayerMode) {
+            return player.fireShot(posX, posY);
+        } else {
+            System.out.println("We gunna give you a shot");
+            session.sendShot(posX, posY);
+            try {
+                JsonObject json = session.returnShot.poll(5, TimeUnit.SECONDS);
+                ShotType shotType = ShotType.valueOf(json.get("ShotType").getAsString());
+                if (shotType == ShotType.SUNK) {
+                    System.out.println("We got a ship sunk");
+                    int xAnchor = json.get("X").getAsInt();
+                    int yAnchor = json.get("Y").getAsInt();
+                    boolean horizontal = json.get("Horizontal").getAsBoolean();
+                    int length = json.get("Length").getAsInt();
+                    int xLength = 1;
+                    int yLength = 1;
+                    if (horizontal) {
+                        xLength = length;
+                    } else {
+                        yLength = length;
+                    }
+                    for (int i = xAnchor; i < xAnchor + xLength; i++) {
+                        for (int j = yAnchor; j < yAnchor + yLength; j++) {
+                            player.getGrid().getCell(i, j).setSquareState(SquareState.SHIPSUNK);
+                        }
+                    }
+                    return shotType;
+                } else {
+                    player.getGrid().getCell(posX, posY).setSquareState(convertShotTypeToSquareState(shotType));
+                    return shotType;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
     }
 
     private boolean CheckCellHit(int xCell, int yCell) {
@@ -201,6 +274,10 @@ public class Game {
                 while (target.getSquareState() != SquareState.WATER) {
                     i++;
                     target = aiGrid.getCell(xCell + i, yCell);
+                    if (target.getSquareState() == SquareState.SHOTMISSED) {
+                        vertical = true;
+                        break;
+                    }
                 }
                 x = aiGrid.getCellX(target);
                 y = aiGrid.getCellY(target);
@@ -222,6 +299,21 @@ public class Game {
                 while (target.getSquareState() != SquareState.WATER) {
                     i++;
                     target = aiGrid.getCell(xCell, yCell + i);
+                    if (target.getSquareState() == SquareState.SHOTMISSED) {
+
+                        i = 0;
+                        try {
+                            target = aiGrid.getCell(xCell - 1, yCell);
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            i++;
+                            target = aiGrid.getCell(xCell + i, yCell);
+                        }
+
+                        while (target.getSquareState() != SquareState.WATER) {
+                            i++;
+                            target = aiGrid.getCell(xCell + i, yCell);
+                        }
+                    }
                 }
                 x = aiGrid.getCellX(target);
                 y = aiGrid.getCellY(target);
@@ -336,6 +428,50 @@ public class Game {
                 placed = placeShip(playerNr, ship.getShipType(), x, y, horizontal);
             } while (!placed);
         }
+    }
+
+    public void setOpponent(String name) {
+        System.out.println("Opponent: " + name);
+        players[1] = new Player(name, 1 - players[0].getPlayerNr());
+        System.out.println("Player: " + players[0].getName());
+        battleGame.getApplication().setOpponentName(players[0].getPlayerNr(), name);
+    }
+
+    public boolean setGameReady() {
+        if (players[0].isReady() && players[1].isReady()) {
+            battleGame.getApplication().EnterPlaymode();
+            System.out.println("Both players ready");
+            return true;
+        }
+        return false;
+    }
+
+    public void setOpponentReady() {
+        players[1].setStateToReady();
+        setGameReady();
+    }
+
+    public void shotFiredMultiplayer(int x, int y) {
+        System.out.println("WE GOT SHOT");
+        ShotType shot = players[0].fireShot(x, y);
+        if (shot == ShotType.SUNK) {
+            Cell cell = players[0].getGrid().getCell(x, y);
+            Grid grid = players[0].getGrid();
+            for (Ship ship : players[0].getShips()) {
+                if (ship.isOnCell(cell)) {
+                    Cell anchor = ship.getAnchor();
+                    int xAnchor = grid.getCellX(anchor);
+                    int yAnchor = grid.getCellY(anchor);
+                    int length = ship.getLength();
+                    boolean horizontal = ship.isHorizontal();
+                    session.sendResult(shot, xAnchor, yAnchor, length, horizontal);
+                    break;
+                }
+            }
+        } else {
+            session.sendResult(shot);
+        }
+        battleGame.fireShotMultiplayer(shot, x, y);
     }
 
 }
