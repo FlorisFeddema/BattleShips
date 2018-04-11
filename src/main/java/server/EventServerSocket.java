@@ -41,7 +41,6 @@ public class EventServerSocket {
             ReadyPlayer(session);
         } else if (keyInJson(json, "Fire")) {
             //Fire shot location
-            System.out.println("Shot incomming bro");
             SendShotLocation(json, session);
         } else if (keyInJson(json, "ShotType")) {
             //Fire shot type
@@ -53,7 +52,6 @@ public class EventServerSocket {
     private void SendShotType(JsonObject json, Session session) {
         Session other = getOtherSession(session);
         try {
-            System.out.println("We got a shot back");
             other.getBasicRemote().sendText(json.toString());
         } catch (IOException e) {
             e.printStackTrace();

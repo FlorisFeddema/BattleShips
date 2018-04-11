@@ -434,12 +434,20 @@ public class Game {
         System.out.println("Opponent: " + name);
         players[1] = new Player(name, 1 - players[0].getPlayerNr());
         System.out.println("Player: " + players[0].getName());
-        battleGame.getApplication().setOpponentName(players[0].getPlayerNr(), name);
+        try {
+            battleGame.getApplication().setOpponentName(players[0].getPlayerNr(), name);
+        } catch (Exception e) {
+            //ignore
+        }
     }
 
     public boolean setGameReady() {
         if (players[0].isReady() && players[1].isReady()) {
-            battleGame.getApplication().EnterPlaymode();
+            try {
+                battleGame.getApplication().EnterPlaymode();
+            } catch (Exception e) {
+                //ignore
+            }
             System.out.println("Both players ready");
             return true;
         }

@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import seabattlegame.SeaBattleGame;
 import seabattlegui.ShipType;
+import seabattlegui.ShotType;
 
 import static org.junit.Assert.*;
 
@@ -70,7 +71,7 @@ public class GameTest {
     public void removeShipCorrect() {
         int value = game.registerPlayer("Hans", true);
         game.placeShip(value, ShipType.MINESWEEPER, 1, 1, true);
-        boolean bool = game.removeShip(0, 1, 1);
+        boolean bool = game.removeShip(value, 1, 1);
         assertTrue(bool);
     }
 
@@ -78,47 +79,94 @@ public class GameTest {
     public void removeShipIncorrect() {
         int value = game.registerPlayer("Hans", true);
         game.placeShip(value, ShipType.MINESWEEPER, 1, 1, true);
-        boolean bool = game.removeShip(0, 5, 1);
-        assertTrue(bool);
+        boolean bool = game.removeShip(value, 5, 1);
+        assertFalse(bool);
     }
 
     @Test
-    public void setStateToReady() {
+    public void setStateToReadyInCorrect() {
+        int value = game.registerPlayer("Hans", true);
+        boolean bool = game.setGameReady();
+        assertFalse(bool);
     }
 
     @Test
     public void fireShot() {
+        int value = game.registerPlayer("Hans", true);
+        ShotType shotType = game.fireShot(0, 1, 1);
+        assertEquals(shotType, ShotType.MISSED);
+    }
+
+    public int fireShotOpponent() {
+        game = new Game(new SeaBattleGame());
+        int value = game.registerPlayer("Hans", true);
+        game.placeShipsRandom(value);
+        int count = 0;
+        while (game.fireShotOpponent(0) != ShotType.ALLSUNK) {
+            count++;
+        }
+        return count;
     }
 
     @Test
-    public void fireShotOpponent() {
+    public void fireShotOpponentTest() {
+        int testamount = 5;
+        int total = 0;
+        for (int i = 0; i < testamount; i++) {
+            total += fireShotOpponent();
+        }
+        float value = total / testamount;
+        System.out.println(value);
+        assertTrue(value < 70);
     }
 
     @Test
     public void getPlayerGrid() {
+        int value = game.registerPlayer("Hans", true);
+        Grid grid = game.getPlayerGrid(value);
+        assertSame(game.players[0].getGrid(), grid);
     }
 
     @Test
     public void removeAllShips() {
+        int value = game.registerPlayer("Hans", true);
+        game.placeShip(value, ShipType.MINESWEEPER, 1, 1, true);
+        game.removeAllShips(value);
+        assertEquals(0, game.players[0].getShips()[0].cells.size());
     }
 
     @Test
     public void placeShipsRandom() {
+        int value = game.registerPlayer("Hans", true);
+        game.placeShipsRandom(value);
+        assertTrue(game.players[0].isShipPlaced(ShipType.MINESWEEPER));
+        assertTrue(game.players[0].isShipPlaced(ShipType.AIRCRAFTCARRIER));
+        assertTrue(game.players[0].isShipPlaced(ShipType.SUBMARINE));
+        assertTrue(game.players[0].isShipPlaced(ShipType.CRUISER));
+        assertTrue(game.players[0].isShipPlaced(ShipType.BATTLESHIP));
     }
 
     @Test
     public void setOpponent() {
+        int value = game.registerPlayer("Hans", true);
+        game.setOpponent("Pieter");
+        assertEquals("Pieter", game.getPlayerByNr(1).getName());
     }
 
     @Test
     public void setGameReady() {
+        int value = game.registerPlayer("Hans", true);
+        game.placeShipsRandom(value);
+        game.setStateToReady(0);
+        game.setOpponentReady();
+        boolean bool = game.setGameReady();
+        assertTrue(bool);
     }
 
     @Test
     public void setOpponentReady() {
-    }
-
-    @Test
-    public void shotFiredMultiplayer() {
+        int value = game.registerPlayer("Hans", true);
+        game.setOpponentReady();
+        assertTrue(game.getPlayerByNr(1).isReady());
     }
 }
