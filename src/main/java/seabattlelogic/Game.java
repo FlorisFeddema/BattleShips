@@ -1,6 +1,7 @@
 package seabattlelogic;
 
 import client.EventClientSocket;
+import client.IEventClientSocket;
 import com.google.gson.JsonObject;
 import seabattlegame.SeaBattleGame;
 import seabattlegui.ShipType;
@@ -10,11 +11,11 @@ import seabattlegui.SquareState;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-public class Game {
+public class Game implements IGameSocket {
 
     Player[] players;
     private boolean singlePlayerMode;
-    private EventClientSocket session;
+    private IEventClientSocket session;
 
     SeaBattleGame battleGame;
     private Grid aiGrid;

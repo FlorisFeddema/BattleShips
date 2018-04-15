@@ -3,7 +3,7 @@ package client;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import seabattlegui.ShotType;
-import seabattlelogic.Game;
+import seabattlelogic.IGameSocket;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -11,15 +11,15 @@ import java.net.URI;
 import java.util.concurrent.SynchronousQueue;
 
 @ClientEndpoint
-public class EventClientSocket {
+public class EventClientSocket implements IEventClientSocket {
 
     public SynchronousQueue<Integer> playerId;
     public SynchronousQueue<JsonObject> returnShot;
 
     private Session server;
-    private Game game;
+    private IGameSocket game;
 
-    public EventClientSocket(Game game, String name) {
+    public EventClientSocket(IGameSocket game, String name) {
         this.game = game;
         playerId = new SynchronousQueue<>();
         returnShot = new SynchronousQueue<>();
