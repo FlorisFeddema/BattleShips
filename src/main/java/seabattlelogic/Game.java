@@ -58,7 +58,7 @@ public class Game implements IGameSocket {
             try {
                 //get id from server
                 try {
-                    int id = session.playerId.poll(1, TimeUnit.SECONDS);
+                    int id = session.getPlayerId().poll(1, TimeUnit.SECONDS);
                     //check name taken
                     if (id > -1) {
                         System.out.println("Id " + name + ": " + id);
@@ -175,7 +175,7 @@ public class Game implements IGameSocket {
             System.out.println("We gunna give you a shot");
             session.sendShot(posX, posY);
             try {
-                JsonObject json = session.returnShot.poll(5, TimeUnit.SECONDS);
+                JsonObject json = session.getReturnShot().poll(5, TimeUnit.SECONDS);
                 ShotType shotType = ShotType.valueOf(json.get("ShotType").getAsString());
                 if (shotType == ShotType.SUNK) {
                     System.out.println("We got a ship sunk");

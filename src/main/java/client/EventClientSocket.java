@@ -19,6 +19,14 @@ public class EventClientSocket implements IEventClientSocket {
     private Session server;
     private IGameSocket game;
 
+    public SynchronousQueue<Integer> getPlayerId() {
+        return playerId;
+    }
+
+    public SynchronousQueue<JsonObject> getReturnShot() {
+        return returnShot;
+    }
+
     public EventClientSocket(IGameSocket game, String name) {
         this.game = game;
         playerId = new SynchronousQueue<>();

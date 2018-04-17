@@ -6,9 +6,9 @@ import seabattlegui.ShotType;
 import java.util.concurrent.SynchronousQueue;
 
 public interface IEventClientSocket {
-    SynchronousQueue<Integer> playerId = new SynchronousQueue<>();
-    SynchronousQueue<JsonObject> returnShot = new SynchronousQueue<>();
-    ;
+    SynchronousQueue<Integer> getPlayerId();
+
+    SynchronousQueue<JsonObject> getReturnShot();
 
     void sendReady();
 
